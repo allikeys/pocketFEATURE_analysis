@@ -37,15 +37,28 @@
 ## Step 4: Compare Pockets
 
 ### Option 1: Compare all pockets against a specific short list of pockets
-    compareSitesPerModel.sh -- 
+    perModelSubmission.sh -- Submits one batch script to compare all feature files in the main directory against feature files in a given subdirectory
         REQUIRES:
-            compareSitesPerModel.py -
-            
+            Submission script must be in the folder containing all feature files (.ff) of interest
+            Sub-folder with feature files for short list of pockets to be compared against full list must be in main folder
+            compareSitesPerModel.sh - Submission script to call python script with appropriate pocket
+            compareSitesPerModel.py - Python script to run all individual comparisons
+            CompareTwoSites.pl - Script from PocketFEATURE to compare a given pair of pockets
+            Note: Ensure that the locations of the two required scripts are fixed for your system in the other scripts
+        INPUTS:
+            path: The path to the sub-folder of interest
+        OUTPUT:
+            one slurm file per pocket on the short list of pockets containing the scores comparing a single pocket to all others
 
 ### Option 2: Compare all pockets against all other pockets
-    compareAllSites.sh -- 
+    compareAllSubmission.sh -- 
         REQUIRES:
-            compareAllSites.py - python script to make comparisons between 
-            
-            
+            Submission script must be in the folder containing all feature files (.ff) of interest
+            compareAllSites.py - Python script to make comparisons between all feature files in given folder
+            CompareTwoSites.pl - Script from PocketFEATURE to compare a given pair of pockets
+            Note: Ensure that the locations of the two required scripts are fixed for your system in the other scripts
+        INPUTS: 
+            None
+        OUTPUT:
+            A single slurm file containing all pairwise comparison scores. 
             
