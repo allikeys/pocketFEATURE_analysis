@@ -1,5 +1,6 @@
 #Inputs:
 #	ligand_file: List of approved ligands, one per line
+# 	path: Path to directory with PDB Files
 #	out_name: Name of the output file to create
 
 import sys
@@ -8,8 +9,8 @@ import os
 from io import open
 import pandas as pd
 
-def getAllFiles():
-	allFiles = os.listdir('PDB_Files')
+def getAllFiles(path):
+	allFiles = os.listdir(path)
 	pdb_files = []
 	for filename in allFiles:
 		if filename.endswith('.pdb'):
@@ -25,18 +26,11 @@ def getLigands(ligand_file):
 	return ligands
 
 def processLine(line):
-	beginning = line[0:17]
-	middle = [''] * 3
-
 	if line[0:len('HETATM')] == 'HETATM':
-		first_half = line[17:29].split()
-		middle[0:len(first_half)] = first_half
-
-		if len(middle[1]) > 1:
-			middle[2] = middle[1][1:]
-			middle[1] = middle[1][0:1]
-		#print(middle)
-		return middle
+		lig = line[17:20].lstrip()
+		chain = line[21:22].lstrip()
+		pos = line[22:28].lstrip()
+		return [lig, chain, pos]
 
 	return ''
 
@@ -51,14 +45,14 @@ def printOutput(df, ligands, pdb_id, outfile):
 			#print(pdb_id + '\t' + df.loc[i, 'Lig'] + '\t' + df.loc[i, 'Chain'] + '\t' + df.loc[i, 'Pos'])
 			used_ligands.append(lig)
 
-def main(ligandlist, out_name):
+def main(ligandlist, path, out_name):
 
 	outfile = open(out_name, "w")
 	ligands = getLigands(ligandlist)
-	pdb_files = getAllFiles()
+	pdb_files = getAllFiles(path)
 
-	for pdb_file in pdb_files:
-		file = open(os.path.join('PDB_Files', pdb_file), 'r')
+	for pdb_file in pdb_files: 
+		file = open(os.path.join(path, pdb_file), 'r')
 		pdb_id = pdb_file[:-4]
 		hetatm_lines = []
 
@@ -78,4 +72,11 @@ def main(ligandlist, out_name):
 	outfile.close()
 			
 if __name__ == "__main__":
-	main(sys.argv[1], sys.argv[2])
+	try: 
+		ligandlist = sys.argv[1]
+		path = sys.argv[2]
+		out_name = sys.argv[3]
+	except:
+		print("Incorect Usage! Run with the following arguments: \n    Arg1 - ligand_file: List of approved ligands, one per line\n    Arg2 - path: Path to folder containing PDB Files\n    Arg3 - out_name: Name of the output file to create")
+		sys.exit()
+	main(ligandlist, path, out_name)
